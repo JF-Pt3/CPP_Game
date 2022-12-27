@@ -17,13 +17,10 @@ void Game::initWindow()
 
 void Game::initEnemies()
 {
-	//this->enemy.setPosition();
-	//Por default o enemy aparece no canto superior esquerdo.
 
+	this->enemy.setPosition(300.f, 400.f);
 	this->enemy.setSize(sf::Vector2f(100.f, 100.f));
-	// O constructor desta função não permite inserir diretamente X e Y. 
-	// Utiliza-se como parâmetro de entrada a função Vector2f, esta função permite criar um vector bidimensional com as coordenadas X e Y
-	// Neste caso quando digo "Vector2f(100.f, 100.f)", estou a criar um rectangulo de 100 X 100, i.e, um quadrado!
+	this->enemy.setScale(sf::Vector2f(0.5f, .5f));	//Diminuímos o enemy para metade
 	this->enemy.setFillColor(sf::Color::Cyan); // fill enemy with cyan color...
 	this->enemy.setOutlineColor(sf::Color::Green);
 	this->enemy.setOutlineThickness(1.f);
@@ -71,7 +68,12 @@ void Game::pollEvents()
 void Game::update()
 {
 	this->pollEvents();// aqui dentro vamos chamar o pollEvents( é a tal função que faz a mecânica de tratamento de eventos no nosso jogo)
-	
+
+	//Estamos a imprimir as posições X e Y do rato, mas é relativamente ao ecrã físico do computador e não janela que se criou a "window" do tipo RenderWindow
+	//std::cout << "Mouse position: x:" << sf::Mouse::getPosition().x << "y: " << sf::Mouse::getPosition().y << std::endl;
+
+	// Relative do RenderWindow, our window!! :-)
+	std::cout << "Mouse position: x:" << sf::Mouse::getPosition(*this->window).x << "y: " << sf::Mouse::getPosition(*this->window).y << std::endl;
 
 }
 
