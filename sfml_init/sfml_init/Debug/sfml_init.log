@@ -1,2 +1,3 @@
 ﻿  Game.cpp
+C:\Users\JF\Desktop\CPP_Game\sfml_init\sfml_init\Game.cpp(140,27): warning C4018: '<': signed/unsigned mismatch
   sfml_init.vcxproj -> C:\Users\JF\Desktop\CPP_Game\sfml_init\Debug\sfml_init.exe

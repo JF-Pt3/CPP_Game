@@ -1,5 +1,7 @@
 #pragma once
 #include <iostream>
+#include <vector> // Para guardar enemies 
+#include <ctime>
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
@@ -28,7 +30,17 @@ private:
 	sf::VideoMode videoMode;
 	sf::Event ev;// o ev tem uma inicialização deafault...
 
+	//Mouse Positions:
+	sf::Vector2i mousePosWindow;
+
+	//Game logic
+	int points;
+	float enemySpawnTimer;
+	float enemySpawnTimerMax;
+	int maxEnemies;
+
 	//Game Objects
+	std::vector<sf::RectangleShape> enemies; // Estou a criar um vector que irá guardar dados do tipo "sf::RectangleShape", que é o tipo de dados dos enemies!
 	sf::RectangleShape enemy;//
 
 
@@ -46,8 +58,12 @@ public:
 	const bool running() const;// enquanto a janela está aberta.. é porque a janela está em "running"
 
 	//Our Functions:
+	void spawnEnemy(); // para criar enemies ahahahah :-)
 	void pollEvents();
+	void updateMousePositions();
+	void updateEnemies();
 	void update();
+	void renderEnemies();
 	void render();
 };
 
