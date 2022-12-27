@@ -27,10 +27,14 @@ private:
 	sf::VideoMode videoMode;
 	sf::Event ev;// o ev tem uma inicialização deafault...
 
+	//Game Objects
+	sf::RectangleShape enemy;//
+
 
 	//Criação de algumas funções que não pretendemos dar acesso...
 	void initializeVariables();
 	void initWindow();
+	void initEnemies();
 
 public:
 	//Contructors and Destructors

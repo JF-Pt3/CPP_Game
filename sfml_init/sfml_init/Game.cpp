@@ -11,6 +11,22 @@ void Game::initWindow()
 	this->videoMode.width = 800;
 	//this->videoMode.getDesktopMode; para ir buscar a resolução do ecrã do pc directamente...
 	this->window = new sf::RenderWindow(this->videoMode, "Game One", sf::Style::Titlebar | sf::Style::Close);
+
+	this->window->setFramerateLimit(144);
+}
+
+void Game::initEnemies()
+{
+	//this->enemy.setPosition();
+	//Por default o enemy aparece no canto superior esquerdo.
+
+	this->enemy.setSize(sf::Vector2f(100.f, 100.f));
+	// O constructor desta função não permite inserir diretamente X e Y. 
+	// Utiliza-se como parâmetro de entrada a função Vector2f, esta função permite criar um vector bidimensional com as coordenadas X e Y
+	// Neste caso quando digo "Vector2f(100.f, 100.f)", estou a criar um rectangulo de 100 X 100, i.e, um quadrado!
+	this->enemy.setFillColor(sf::Color::Cyan); // fill enemy with cyan color...
+	this->enemy.setOutlineColor(sf::Color::Green);
+	this->enemy.setOutlineThickness(1.f);
 }
 
 Game::Game() {//Definição do construtor
@@ -18,6 +34,7 @@ Game::Game() {//Definição do construtor
 	/// é necessário ter esta ordem, porque não vamos pretender inicializar o ecrã e só depois inicializar variáveis....
 	this->initializeVariables();
 	this->initWindow();
+	this->initEnemies();
 }
 
 Game::~Game() {//Definição do destructor
@@ -66,7 +83,10 @@ void Game::render()
 		- display frame in our window;
 		Renders the game objects
 	*/
-	this->window->clear(sf::Color(255,0,0,255));// 1º limpa-se a janela, pintado-a de vermelho...
+	this->window->clear();// O clear força o update à janela com côr preta. É o deafault!
+
+	/// Draw game objects:
+	this->window->draw(this->enemy);
 
 	//Pintam-se os objectos na janelinha...
 	this->window->display(); // 2º Faz-se o display
