@@ -7,7 +7,7 @@ void Game::initializeVariables()
 	//Variables related to game logic
 
 	this->points = 0;
-	this->enemySpawnTimerMax = 1000.f;
+	this->enemySpawnTimerMax = 10.f;// Rate of enemy generation/spawning
 	this->enemySpawnTimer = this->enemySpawnTimerMax;	
 	this->maxEnemies = 5;
 }
@@ -29,8 +29,8 @@ void Game::initEnemies()
 	this->enemy.setSize(sf::Vector2f(100.f, 100.f));
 	this->enemy.setScale(sf::Vector2f(0.5f, .5f));	//Diminuímos o enemy para metade
 	this->enemy.setFillColor(sf::Color::Cyan); // fill enemy with cyan color...
-	this->enemy.setOutlineColor(sf::Color::Green);
-	this->enemy.setOutlineThickness(1.f);
+	//this->enemy.setOutlineColor(sf::Color::Green);
+	//this->enemy.setOutlineThickness(1.f);
 }
 
 Game::Game() {//Definição do construtor
@@ -52,11 +52,7 @@ const bool Game::running() const
 
 
 
-
 //Functions
-
-
-
 
 
 void Game::spawnEnemy()
@@ -120,7 +116,7 @@ void Game::updateMousePositions()
 	*/
 
 	this->mousePosWindow = sf::Mouse::getPosition(*this->window);// não esquece que o window é um pointer logo o this temos de referenciar
-
+	this->mousePosView = this->window->mapPixelToCoords(this->mousePosWindow);//We take our mouse positions in window,secondly this positions are mapped to floats. Finally this floats are mapped to our View
 }
 
 void Game::updateEnemies()
@@ -128,12 +124,12 @@ void Game::updateEnemies()
 	/*
 		@return void
 		Updates the enemy spawn timer and spawns enemies
-		when the total amount of enemies is smaller than the maximum 
-		
+		when the total amount of enemies is smaller than the maximum
+
 		Moves the enemies downwards
 
 		Removes enemies at the edge of the screen. //TODO
-	
+
 	*/
 
 	//Updating the timer for enemy spawning
@@ -150,13 +146,44 @@ void Game::updateEnemies()
 
 	}
 
-	//Move the enemies:
+	//Move the enemies: ranged-based for-loop were changed to regular for-loop, bacause we will delete our enemies in vector
 
-	for (auto& e : this->enemies)
-		e.move(0.f, 1.f); // A cada enemy gerado, procede-se à translação de 5 unidades para baixo (eixo y),
+	for (int i = 0; i < this->enemies.size(); i++){
+		this->enemies[i].move(0.f, 1.f); // A cada enemy gerado, procede-se à translação de 5 unidades para baixo (eixo y),
 	//coloquei 1.f para ir andando só uma unidade para baixo, sendo mais lentinho...vê-se melhor :-)
 
+	//Check if we clicked upon enemy object
+	// First: We check if the mouse botton is pressed, and:
+	// Secondly: check if our mouse is within the bounds of enemy "rectangles"
 
+	// All the time, we execute the light computation,i.e, we check if botton mouse is pressed
+		// The heavy computation is executed only if botton is pressed, in a second step
+
+		
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+
+			/*For each enemy :
+				-getGlobalBounds: Since enemy is a rectangle, this function gives you the bounds / or the limits of our rectangle object
+				-contains:  We check if our mouse (this->mousePosView) is within our rectangle bounds
+			*/
+
+			if (this->enemies[i].getGlobalBounds().contains(this->mousePosView)) {
+				//If I click an enemy, it disappears :-)
+				this->enemies.erase(this->enemies.begin() + i); // An vector iterator to enemies.begin(). To get the enemy stored in vector we sum i to it.
+				
+				
+			}
+
+			//If the enemy passed the bottom of the screen, we delete it too...
+			//If the top left position of enemy rectangle is bigger that limit y of window, we delete that enemy...
+			/*if (this->enemies[i].getPosition().y > this->window->getSize().y) {
+
+			}*/
+
+
+		}
+
+	}
 }
 
 

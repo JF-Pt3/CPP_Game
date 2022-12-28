@@ -31,7 +31,9 @@ private:
 	sf::Event ev;// o ev tem uma inicialização deafault...
 
 	//Mouse Positions:
-	sf::Vector2i mousePosWindow;
+	sf::Vector2i mousePosWindow;//Most of operations in SFML are done with float, so we will start to use Vector2f (two floats for mouse positions...)
+	sf::Vector2f mousePosView;
+
 
 	//Game logic
 	int points;
