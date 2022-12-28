@@ -6,7 +6,7 @@ void Game::initializeVariables()
 
 	//Variables related to game logic
 
-	this->points = 0;
+	this->points = 0;//Points earned when we kill the enemy
 	this->enemySpawnTimerMax = 10.f;// Rate of enemy generation/spawning
 	this->enemySpawnTimer = this->enemySpawnTimerMax;	
 	this->maxEnemies = 5;
@@ -146,11 +146,13 @@ void Game::updateEnemies()
 
 	}
 
-	//Move the enemies: ranged-based for-loop were changed to regular for-loop, bacause we will delete our enemies in vector
+	//Moving and updating the enemies: ranged-based for-loop were changed to regular for-loop, bacause we will delete our enemies in vector
 
 	for (int i = 0; i < this->enemies.size(); i++){
-		this->enemies[i].move(0.f, 1.f); // A cada enemy gerado, procede-se à translação de 5 unidades para baixo (eixo y),
+		bool deleted = false;
+		this->enemies[i].move(0.f, 5.f); // A cada enemy gerado, procede-se à translação de 5 unidades para baixo (eixo y),
 	//coloquei 1.f para ir andando só uma unidade para baixo, sendo mais lentinho...vê-se melhor :-)
+	 //enemies[i].move(0.f, 1.f); within second parameter we can increase the enemy rate creation
 
 	//Check if we clicked upon enemy object
 	// First: We check if the mouse botton is pressed, and:
@@ -169,16 +171,22 @@ void Game::updateEnemies()
 
 			if (this->enemies[i].getGlobalBounds().contains(this->mousePosView)) {
 				//If I click an enemy, it disappears :-)
-				this->enemies.erase(this->enemies.begin() + i); // An vector iterator to enemies.begin(). To get the enemy stored in vector we sum i to it.
-				
-				
+				//this->enemies.erase(this->enemies.begin() + i); // An vector iterator to enemies.begin(). To get the enemy stored in vector we sum i to it.
+				deleted = true;
+				// You killed one enemie, congratulations, earn 10 points... :-)
+				this->points += 10.f;
+				std::cout << "Points: " << this->points << std::endl;
+
 			}
 
 			//If the enemy passed the bottom of the screen, we delete it too...
 			//If the top left position of enemy rectangle is bigger that limit y of window, we delete that enemy...
-			/*if (this->enemies[i].getPosition().y > this->window->getSize().y) {
+			if (this->enemies[i].getPosition().y > this->window->getSize().y) {
+				deleted = true;
+			}
 
-			}*/
+			if(deleted)
+				this->enemies.erase(this->enemies.begin() + i);
 
 
 		}

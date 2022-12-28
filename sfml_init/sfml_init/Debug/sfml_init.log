@@ -1,4 +1,5 @@
 ﻿  Game.cpp
 C:\Users\JF\Desktop\CPP_Game\sfml_init\sfml_init\Game.cpp(136,27): warning C4018: '<': signed/unsigned mismatch
 C:\Users\JF\Desktop\CPP_Game\sfml_init\sfml_init\Game.cpp(151,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\JF\Desktop\CPP_Game\sfml_init\sfml_init\Game.cpp(177,21): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
   sfml_init.vcxproj -> C:\Users\JF\Desktop\CPP_Game\sfml_init\Debug\sfml_init.exe
