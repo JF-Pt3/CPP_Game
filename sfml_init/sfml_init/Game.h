@@ -36,10 +36,14 @@ private:
 
 
 	//Game logic
-	int points;
+	
+	bool endGame;
+	unsigned points; // only positive points :-)
+	int health;
 	float enemySpawnTimer;
 	float enemySpawnTimerMax;
 	int maxEnemies;
+	bool mouseHeld;
 
 	//Game Objects
 	std::vector<sf::RectangleShape> enemies; // Estou a criar um vector que irá guardar dados do tipo "sf::RectangleShape", que é o tipo de dados dos enemies!
@@ -48,7 +52,7 @@ private:
 
 	//Criação de algumas funções que não pretendemos dar acesso...
 	void initializeVariables();
-	void initWindow();
+	void initWindow();	
 	void initEnemies();
 
 public:
@@ -58,6 +62,7 @@ public:
 
 	//Accessors
 	const bool running() const;// enquanto a janela está aberta.. é porque a janela está em "running"
+	const bool getEndGame() const;
 
 	//Our Functions:
 	void spawnEnemy(); // para criar enemies ahahahah :-)

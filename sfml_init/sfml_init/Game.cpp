@@ -5,11 +5,13 @@ void Game::initializeVariables()
 	this->window = nullptr; // o window é do tipo apontador( ver as variáveis do Game.h)
 
 	//Variables related to game logic
-
+	this->endGame = false;
 	this->points = 0;//Points earned when we kill the enemy
 	this->enemySpawnTimerMax = 10.f;// Rate of enemy generation/spawning
 	this->enemySpawnTimer = this->enemySpawnTimerMax;	
 	this->maxEnemies = 5;
+	this->mouseHeld = false; // Starts in "false" since in begining we are not holding the mouse...
+	this->health = 10;
 }
 
 void Game::initWindow()
@@ -21,6 +23,8 @@ void Game::initWindow()
 
 	this->window->setFramerateLimit(60);// ao invés de 144 fps é melhor baixar para 60, garante-se que em pc's rascas isto funciona
 }
+
+
 
 void Game::initEnemies()
 {
@@ -37,7 +41,7 @@ Game::Game() {//Definição do construtor
 	// Vai permitir chamar as funções que vão fazer as "coisas" aparecer no ecrã!...
 	/// é necessário ter esta ordem, porque não vamos pretender inicializar o ecrã e só depois inicializar variáveis....
 	this->initializeVariables();
-	this->initWindow();
+	this->initWindow();	
 	this->initEnemies();
 }
 
@@ -48,6 +52,11 @@ Game::~Game() {//Definição do destructor
 const bool Game::running() const
 {
 	return this->window->isOpen();
+}
+
+const bool Game::getEndGame() const
+{
+	return this->endGame;
 }
 
 
@@ -78,7 +87,9 @@ void Game::spawnEnemy()
 				-> rand() % (this->window->getSize().x - this->enemy.getSize().x)
 	*/
 	this->enemy.setPosition(
-		//See the manual: setPosition requires x and y to be float, we need a cast...
+		//Generate a X coordinate between 0 and 500, since our height is 600 and lenght of rectangle is 100, we should't insert a rectangle beyond 500,since the rectangle can exceed our height window  
+
+		// Note: rand() % 100 ->> means that we will generate a random number between 0 and 99, so in fact the 99 line is generating an integer between 0 and 499
 		static_cast<float>(rand() % static_cast<int>(this->window->getSize().x - this->enemy.getSize().x)),0.f
 		//static_cast<float>(rand() % static_cast<int>(this->window->getSize().y - this->enemy.getSize().y)) // o enemy aqui já vai com avanço, com 0.f o enemy começa lá em cima!
 	
@@ -138,6 +149,7 @@ void Game::updateEnemies()
 		if (this->enemySpawnTimer >= this->enemySpawnTimerMax) {
 
 			//Spawn the enemy and reset the timer
+			
 			this->spawnEnemy();
 			this->enemySpawnTimer = 0.f;
 		}
@@ -146,52 +158,50 @@ void Game::updateEnemies()
 
 	}
 
-	//Moving and updating the enemies: ranged-based for-loop were changed to regular for-loop, bacause we will delete our enemies in vector
 
 	for (int i = 0; i < this->enemies.size(); i++){
 		bool deleted = false;
-		this->enemies[i].move(0.f, 5.f); // A cada enemy gerado, procede-se à translação de 5 unidades para baixo (eixo y),
-	//coloquei 1.f para ir andando só uma unidade para baixo, sendo mais lentinho...vê-se melhor :-)
-	 //enemies[i].move(0.f, 1.f); within second parameter we can increase the enemy rate creation
+		this->enemies[i].move(0.f, 5.f); // In each iteration of main loop, this for-loop force each of enemy rectangle to move this offset, x=0 and y = 5, thats why enemy are moving downwards
 
-	//Check if we clicked upon enemy object
-	// First: We check if the mouse botton is pressed, and:
-	// Secondly: check if our mouse is within the bounds of enemy "rectangles"
+		if (this->enemies[i].getPosition().y > this->window->getSize().y) {
+			this->enemies.erase(this->enemies.begin() + i);
+			this->health -= 1; // if the enemy reaches the bottom screen limit we subtract one point to the player
+			std::cout << "Health: " << this->health << std::endl;
+		}
+	}
+	//Check if clicked upon
+	
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
 
-	// All the time, we execute the light computation,i.e, we check if botton mouse is pressed
-		// The heavy computation is executed only if botton is pressed, in a second step
+		if (this->mouseHeld == false){
+			this->mouseHeld = true;
+			bool deleted = false;
+			for (size_t i = 0; i < this->enemies.size() && deleted == false; i++) {
+				//Once we raise the enemy, it is good practice to cancel this loop, because if i continue to click on my mouse it can be observed sudently crashes.
+				// We should avoid the "break", since it can ruin something in our code.
+				if (this->enemies[i].getGlobalBounds().contains(this->mousePosView)) {
 
-		
-		if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+					deleted = true;
+					this->enemies.erase(this->enemies.begin() + i);
+					
+					//Collect or Gain Points :-)
 
-			/*For each enemy :
-				-getGlobalBounds: Since enemy is a rectangle, this function gives you the bounds / or the limits of our rectangle object
-				-contains:  We check if our mouse (this->mousePosView) is within our rectangle bounds
-			*/
-
-			if (this->enemies[i].getGlobalBounds().contains(this->mousePosView)) {
-				//If I click an enemy, it disappears :-)
-				//this->enemies.erase(this->enemies.begin() + i); // An vector iterator to enemies.begin(). To get the enemy stored in vector we sum i to it.
-				deleted = true;
-				// You killed one enemie, congratulations, earn 10 points... :-)
-				this->points += 10.f;
-				std::cout << "Points: " << this->points << std::endl;
+					this->points += 1;
+					std::cout << "Points: " << this->points << std::endl;
+				}
 
 			}
-
-			//If the enemy passed the bottom of the screen, we delete it too...
-			//If the top left position of enemy rectangle is bigger that limit y of window, we delete that enemy...
-			if (this->enemies[i].getPosition().y > this->window->getSize().y) {
-				deleted = true;
-			}
-
-			if(deleted)
-				this->enemies.erase(this->enemies.begin() + i);
-
-
 		}
 
 	}
+	else {// If we are not clicking in left mouse botton, change this variable to false.
+		this->mouseHeld = false;
+	}
+	//The mouseHeld avoids the player to kill enemies with left mouse botton allways pressed
+	// So we are able to kill again enemy, only when we release the left key botton of mouse.
+
+
+
 }
 
 
@@ -199,10 +209,19 @@ void Game::update()
 {
 	this->pollEvents();
 
-	this->updateMousePositions();
+	//If the game finishes, then we cannot update nothing more.
 
-	this->updateEnemies();
-	
+	if (this->endGame == false) {
+
+		this->updateMousePositions();
+
+		this->updateEnemies();
+
+	}
+	//End game condition
+	if (this->health <= 0) {
+		this->endGame = true;// In main loop endGame becomes true and "Game Over" :-)
+	}
 
 }
 
