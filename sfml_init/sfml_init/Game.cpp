@@ -24,6 +24,24 @@ void Game::initWindow()
 	this->window->setFramerateLimit(60);// ao invés de 144 fps é melhor baixar para 60, garante-se que em pc's rascas isto funciona
 }
 
+void Game::initFonts()
+{
+	if (this->font.loadFromFile("C:/Users/JF/3D Objects/SFML_Project/sfml_init/sfml_init/Fonts/Dosis-Light.ttf")) {
+
+		std::cout << "ERROR::GAME::INITFONTS::FAILED TO LOAD THE DESIRED FONT" << "\n";
+	}
+
+}
+
+void Game::initText()
+{
+	this->uiText.setFont(this->font);
+	this->uiText.setCharacterSize(30);
+	this->uiText.setFillColor(sf::Color::White);
+	this->uiText.setString("none");
+
+}
+
 
 
 void Game::initEnemies()
@@ -42,6 +60,8 @@ Game::Game() {//Definição do construtor
 	/// é necessário ter esta ordem, porque não vamos pretender inicializar o ecrã e só depois inicializar variáveis....
 	this->initializeVariables();
 	this->initWindow();	
+	this->initFonts();
+	this->initText();
 	this->initEnemies();
 }
 
@@ -130,6 +150,16 @@ void Game::updateMousePositions()
 	this->mousePosView = this->window->mapPixelToCoords(this->mousePosWindow);//We take our mouse positions in window,secondly this positions are mapped to floats. Finally this floats are mapped to our View
 }
 
+void Game::updateText()
+{
+	std::stringstream ss; //StreamString alows you to mix integers,chars,doubles,floats and other data types among a string
+	
+	ss << "Points" << this->points << "\n" << "Health: " << this->health;
+	
+	this->uiText.setString(ss.str());
+
+}
+
 void Game::updateEnemies()
 {
 	/*
@@ -214,6 +244,7 @@ void Game::update()
 	if (this->endGame == false) {
 
 		this->updateMousePositions();
+		this->updateText();
 
 		this->updateEnemies();
 
@@ -225,11 +256,16 @@ void Game::update()
 
 }
 
-void Game::renderEnemies()
+void Game::renderText(sf::RenderTarget& target)
+{
+	target.draw(this->uiText); // I am not bounding to draw on screen
+}
+
+void Game::renderEnemies(sf::RenderTarget& target)
 {
 	//Rendering all the enemies
 	for (auto& e : this->enemies)
-		this->window->draw(e);
+		target.draw(e);
 
 }
 
@@ -244,7 +280,9 @@ void Game::render()
 	this->window->clear();// O clear força o update à janela com côr preta. É o deafault!
 
 	/// Draw game objects:
-	this->renderEnemies(); // vamos fazer o render dos enemies.
+	this->renderEnemies(*this->window); // vamos fazer o render dos enemies. *this: we don't want the pointer, so we dereference the pointer, since window is a pointer of type RenderWindow
+
+	this->renderText(*this->window);
 
 	//Pintam-se os objectos na janelinha...
 	this->window->display(); // 2º Faz-se o display

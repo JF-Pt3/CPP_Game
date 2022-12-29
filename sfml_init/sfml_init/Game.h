@@ -2,6 +2,8 @@
 #include <iostream>
 #include <vector> // Para guardar enemies 
 #include <ctime>
+#include <sstream>
+
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
@@ -34,6 +36,11 @@ private:
 	sf::Vector2i mousePosWindow;//Most of operations in SFML are done with float, so we will start to use Vector2f (two floats for mouse positions...)
 	sf::Vector2f mousePosView;
 
+	//Resources
+	sf::Font font;
+
+	//Text
+	sf::Text uiText;
 
 	//Game logic
 	
@@ -53,6 +60,8 @@ private:
 	//Criação de algumas funções que não pretendemos dar acesso...
 	void initializeVariables();
 	void initWindow();	
+	void initFonts();
+	void initText();
 	void initEnemies();
 
 public:
@@ -68,9 +77,11 @@ public:
 	void spawnEnemy(); // para criar enemies ahahahah :-)
 	void pollEvents();
 	void updateMousePositions();
+	void updateText();
 	void updateEnemies();
 	void update();
-	void renderEnemies();
+	void renderText(sf::RenderTarget& target);//Often we don't need to render to main window, sometimes we can render to a view...
+	void renderEnemies(sf::RenderTarget& target);
 	void render();
 };
 
