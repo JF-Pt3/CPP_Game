@@ -7,8 +7,8 @@ void Game::initializeVariables()
 	//Variables related to game logic
 	this->endGame = false;
 	this->points = 0;//Points earned when we kill the enemy
-	this->enemySpawnTimerMax = 10.f;// Rate of enemy generation/spawning
-	this->enemySpawnTimer = this->enemySpawnTimerMax;	
+	this->enemySpawnTimerMax = 20.f;// Rate of enemy generation/spawning
+	this->enemySpawnTimer = this->enemySpawnTimerMax;
 	this->maxEnemies = 5;
 	this->mouseHeld = false; // Starts in "false" since in begining we are not holding the mouse...
 	this->health = 10;
@@ -47,9 +47,8 @@ void Game::initText()
 void Game::initEnemies()
 {
 
-	this->enemy.setPosition(300.f, 400.f);
+	this->enemy.setPosition(10.f, 10.f);
 	this->enemy.setSize(sf::Vector2f(100.f, 100.f));
-	this->enemy.setScale(sf::Vector2f(0.5f, .5f));	//Diminuímos o enemy para metade
 	this->enemy.setFillColor(sf::Color::Cyan); // fill enemy with cyan color...
 	//this->enemy.setOutlineColor(sf::Color::Green);
 	//this->enemy.setOutlineThickness(1.f);
@@ -59,7 +58,7 @@ Game::Game() {//Definição do construtor
 	// Vai permitir chamar as funções que vão fazer as "coisas" aparecer no ecrã!...
 	/// é necessário ter esta ordem, porque não vamos pretender inicializar o ecrã e só depois inicializar variáveis....
 	this->initializeVariables();
-	this->initWindow();	
+	this->initWindow();
 	this->initFonts();
 	this->initText();
 	this->initEnemies();
@@ -88,18 +87,19 @@ void Game::spawnEnemy()
 {
 	/*
 		@return void
-		Spawns enemies and sets their colors and positions
+		Spawns enemies and sets their types,colors.Spawn them random positions.
+		-Sets a random type (diff).
 		-Sets a random position
 		-Sets a random color ( for random we use ctime lib
-		-Adds enemy to the vector 
+		-Adds enemy to the vector
 	*/
 
 	/*
 		rand() % this->window->getSize().x:
-	    I am generating a random number between 0 and the window size in X Axis...
-	    rand() % (this->window->getSize().x - this->enemy.getSize().x)
+		I am generating a random number between 0 and the window size in X Axis...
+		rand() % (this->window->getSize().x - this->enemy.getSize().x)
 		The enemy, that is a square has it's left upper corner in upper left corner...
-	      As the rand() function returns a number between 0 and right limit of our window,
+		  As the rand() function returns a number between 0 and right limit of our window,
 		  because originaly i wrote "rand() % this->window->getSize().x", in limit the function can generate a number in X axis that force our enemy (rectangle) going outside our RenderWindow Window!!!
 
 		  And because of that, we need to subtract that max distance in X axis, with the maximum size of rectangle in relation to X axis:
@@ -110,11 +110,48 @@ void Game::spawnEnemy()
 		//Generate a X coordinate between 0 and 500, since our height is 600 and lenght of rectangle is 100, we should't insert a rectangle beyond 500,since the rectangle can exceed our height window  
 
 		// Note: rand() % 100 ->> means that we will generate a random number between 0 and 99, so in fact the 99 line is generating an integer between 0 and 499
-		static_cast<float>(rand() % static_cast<int>(this->window->getSize().x - this->enemy.getSize().x)),0.f
+		static_cast<float>(rand() % static_cast<int>(this->window->getSize().x - this->enemy.getSize().x)), 0.f
 		//static_cast<float>(rand() % static_cast<int>(this->window->getSize().y - this->enemy.getSize().y)) // o enemy aqui já vai com avanço, com 0.f o enemy começa lá em cima!
-	
+
 	);// esta função como parametros de entrada tem o float x e float y
-	this->enemy.setFillColor(sf::Color::Green);
+
+	//We will have different types of enemies. To do so, we will randomize enemy type:
+	int type = rand() % 5; // Generate 0 to 4 random enemies
+
+	switch (type)
+	{
+
+	case 0:// The hardest enemy!!! ahahaha :-)
+		this->enemy.setSize(sf::Vector2f(10.f, 10.f));// The smaller enemies are the hardest to deal, that's why we set smaller scales
+		this->enemy.setFillColor(sf::Color::Magenta);
+		break;
+
+	case 1:
+		this->enemy.setSize(sf::Vector2f(30.f, 30.f));
+		this->enemy.setFillColor(sf::Color::Blue);
+		break;
+
+	case 2:
+		this->enemy.setSize(sf::Vector2f(50.f, 50.f));
+		this->enemy.setFillColor(sf::Color::Cyan);
+		break;
+
+	case 3:
+		this->enemy.setSize(sf::Vector2f(70.f, 70.f));
+		this->enemy.setFillColor(sf::Color::Yellow);
+		break;
+
+	case 4:
+		this->enemy.setSize(sf::Vector2f(90.f, 90.f));
+		this->enemy.setFillColor(sf::Color::Green);
+		break;
+
+	default:
+		this->enemy.setSize(sf::Vector2f(100.f, 100.f));
+		this->enemy.setFillColor(sf::Color::Red);
+		break;
+	}
+
 
 	//Spawn the enemy:
 	this->enemies.push_back(this->enemy);
@@ -123,10 +160,10 @@ void Game::spawnEnemy()
 void Game::pollEvents()
 {
 	while (this->window->pollEvent(this->ev)) {// quando se invoca o "this" estamos a ir buscar variáveis,funções etc que pertencem à classe do objecto Game, que está definida no Game.h
-		
+
 		switch (this->ev.type) {
 		case sf::Event::Closed:
-			this->window->close();			
+			this->window->close();
 			break;
 
 		case sf::Event::KeyPressed:
@@ -143,7 +180,7 @@ void Game::updateMousePositions()
 {
 	/*@return void
 	  updates the mouse positions
-	    - Mouse position relative to window (Vector2i)
+		- Mouse position relative to window (Vector2i)
 	*/
 
 	this->mousePosWindow = sf::Mouse::getPosition(*this->window);// não esquece que o window é um pointer logo o this temos de referenciar
@@ -153,9 +190,9 @@ void Game::updateMousePositions()
 void Game::updateText()
 {
 	std::stringstream ss; //StreamString alows you to mix integers,chars,doubles,floats and other data types among a string
-	
+
 	ss << "Points" << this->points << "\n" << "Health: " << this->health;
-	
+
 	this->uiText.setString(ss.str());
 
 }
@@ -179,7 +216,7 @@ void Game::updateEnemies()
 		if (this->enemySpawnTimer >= this->enemySpawnTimerMax) {
 
 			//Spawn the enemy and reset the timer
-			
+
 			this->spawnEnemy();
 			this->enemySpawnTimer = 0.f;
 		}
@@ -189,7 +226,7 @@ void Game::updateEnemies()
 	}
 
 
-	for (int i = 0; i < this->enemies.size(); i++){
+	for (int i = 0; i < this->enemies.size(); i++) {
 		bool deleted = false;
 		this->enemies[i].move(0.f, 5.f); // In each iteration of main loop, this for-loop force each of enemy rectangle to move this offset, x=0 and y = 5, thats why enemy are moving downwards
 
@@ -200,10 +237,10 @@ void Game::updateEnemies()
 		}
 	}
 	//Check if clicked upon
-	
+
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
 
-		if (this->mouseHeld == false){
+		if (this->mouseHeld == false) {
 			this->mouseHeld = true;
 			bool deleted = false;
 			for (size_t i = 0; i < this->enemies.size() && deleted == false; i++) {
@@ -211,13 +248,25 @@ void Game::updateEnemies()
 				// We should avoid the "break", since it can ruin something in our code.
 				if (this->enemies[i].getGlobalBounds().contains(this->mousePosView)) {
 
+
+
+					//Collect or Gain Points :-)
+					if (this->enemies[i].getFillColor() == sf::Color::Magenta)
+						this->points += 10;
+					else if (this->enemies[i].getFillColor() == sf::Color::Blue)
+						this->points += 7;
+					else if (this->enemies[i].getFillColor() == sf::Color::Cyan)
+						this->points += 5;
+					else if (this->enemies[i].getFillColor() == sf::Color::Yellow)
+						this->points += 3;
+					else if (this->enemies[i].getFillColor() == sf::Color::Green)
+						this->points += 1;
+					std::cout << "Points: " << this->points << std::endl;
+
+					//Delete the enemy:
 					deleted = true;
 					this->enemies.erase(this->enemies.begin() + i);
-					
-					//Collect or Gain Points :-)
 
-					this->points += 1;
-					std::cout << "Points: " << this->points << std::endl;
 				}
 
 			}
