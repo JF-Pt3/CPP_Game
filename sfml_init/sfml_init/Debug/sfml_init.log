@@ -1,4 +1,6 @@
 ﻿  Game.cpp
-C:\Users\JF\Desktop\CPP_Game\sfml_init\sfml_init\Game.cpp(214,27): warning C4018: '<': signed/unsigned mismatch
-C:\Users\JF\Desktop\CPP_Game\sfml_init\sfml_init\Game.cpp(229,20): warning C4018: '<': signed/unsigned mismatch
-  sfml_init.vcxproj -> C:\Users\JF\Desktop\CPP_Game\sfml_init\Debug\sfml_init.exe
+C:\Users\JF\Desktop\SFML_Project\CPP_Game\sfml_init\sfml_init\Game.cpp(255,27): warning C4018: '<': signed/unsigned mismatch
+C:\Users\JF\Desktop\SFML_Project\CPP_Game\sfml_init\sfml_init\Game.cpp(270,20): warning C4018: '<': signed/unsigned mismatch
+  main.cpp
+  Generating Code...
+  sfml_init.vcxproj -> C:\Users\JF\Desktop\SFML_Project\CPP_Game\sfml_init\Debug\sfml_init.exe

@@ -3,7 +3,7 @@
 
 
 using namespace std;
-using namespace sf; // para desbloquer as rotinas do SFML
+using namespace sf; // unlock functions from SFML
 
 int main() {
 

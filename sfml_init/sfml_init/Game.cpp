@@ -1,10 +1,16 @@
 #include "Game.h"
 
+/*
+	@return void
+	Initialize all variables related to game logic
+
+*/
+
 void Game::initializeVariables()
 {
-	this->window = nullptr; // o window é do tipo apontador( ver as variáveis do Game.h)
+	this->window = nullptr; // Windows is a pointer( check variables from Game.h)
 
-	//Variables related to game logic
+	//
 	this->endGame = false;
 	this->points = 0;//Points earned when we kill the enemy
 	this->enemySpawnTimerMax = 20.f;// Rate of enemy generation/spawning
@@ -13,17 +19,25 @@ void Game::initializeVariables()
 	this->mouseHeld = false; // Starts in "false" since in begining we are not holding the mouse...
 	this->health = 10;
 }
+/*
+	@return void
+	Initialize our Game window
 
+*/
 void Game::initWindow()
 {
-	this->videoMode.height = 600;// mais fácil fazer o ajuste das dimensões do ecrã assim...
+	this->videoMode.height = 600;// manually adjust dimensions of screen
 	this->videoMode.width = 800;
-	//this->videoMode.getDesktopMode; para ir buscar a resolução do ecrã do pc directamente...
+	//this->videoMode.getDesktopMode; directly finds the dimensions of your deafault screen
 	this->window = new sf::RenderWindow(this->videoMode, "Game One", sf::Style::Titlebar | sf::Style::Close);
 
-	this->window->setFramerateLimit(60);// ao invés de 144 fps é melhor baixar para 60, garante-se que em pc's rascas isto funciona
+	this->window->setFramerateLimit(60);// we are limiting to 60 fps (not pushing to much :-) )
 }
-
+/*
+	@return void
+	Load our fonts
+	// we should indicade the path to the .ttf file...
+*/
 void Game::initFonts()
 {
 	if (this->font.loadFromFile("C:/Users/JF/3D Objects/SFML_Project/sfml_init/sfml_init/Fonts/Dosis-Light.ttf")) {
@@ -32,7 +46,11 @@ void Game::initFonts()
 	}
 
 }
+/*
+	@return void
+	Text settings...
 
+*/
 void Game::initText()
 {
 	this->uiText.setFont(this->font);
@@ -42,7 +60,12 @@ void Game::initText()
 
 }
 
+/*
+	@return void
+	Create the enemy default settings
+	-Set position,size and color
 
+*/
 
 void Game::initEnemies()
 {
@@ -54,9 +77,21 @@ void Game::initEnemies()
 	//this->enemy.setOutlineThickness(1.f);
 }
 
-Game::Game() {//Definição do construtor
-	// Vai permitir chamar as funções que vão fazer as "coisas" aparecer no ecrã!...
-	/// é necessário ter esta ordem, porque não vamos pretender inicializar o ecrã e só depois inicializar variáveis....
+/*
+	@return Game
+	Constructor definition
+	- Allows to call all functions related to the game
+	  - window functions;
+	  - Fonts,
+	  - Text,
+	  - Enemies;
+	*The order is important!
+
+*/
+
+Game::Game() {
+	
+	
 	this->initializeVariables();
 	this->initWindow();
 	this->initFonts();
@@ -64,10 +99,21 @@ Game::Game() {//Definição do construtor
 	this->initEnemies();
 }
 
-Game::~Game() {//Definição do destructor
-	delete this->window;// para evitar um grande memory leak...
+/*
+	@return Game
+	Destructor definition
+*/
+
+Game::~Game() {
+	delete this->window;// avoid memory leak...
 }
 
+/*
+
+	Self Explanatory :-)
+
+
+*/
 const bool Game::running() const
 {
 	return this->window->isOpen();
@@ -82,9 +128,6 @@ const bool Game::getEndGame() const
 
 //Functions
 
-
-void Game::spawnEnemy()
-{
 	/*
 		@return void
 		Spawns enemies and sets their types,colors.Spawn them random positions.
@@ -93,6 +136,10 @@ void Game::spawnEnemy()
 		-Sets a random color ( for random we use ctime lib
 		-Adds enemy to the vector
 	*/
+
+void Game::spawnEnemy()
+{
+
 
 	/*
 		rand() % this->window->getSize().x:
@@ -113,7 +160,7 @@ void Game::spawnEnemy()
 		static_cast<float>(rand() % static_cast<int>(this->window->getSize().x - this->enemy.getSize().x)), 0.f
 		//static_cast<float>(rand() % static_cast<int>(this->window->getSize().y - this->enemy.getSize().y)) // o enemy aqui já vai com avanço, com 0.f o enemy começa lá em cima!
 
-	);// esta função como parametros de entrada tem o float x e float y
+	);
 
 	//We will have different types of enemies. To do so, we will randomize enemy type:
 	int type = rand() % 5; // Generate 0 to 4 random enemies
@@ -122,6 +169,7 @@ void Game::spawnEnemy()
 	{
 
 	case 0:// The hardest enemy!!! ahahaha :-)
+		
 		this->enemy.setSize(sf::Vector2f(10.f, 10.f));// The smaller enemies are the hardest to deal, that's why we set smaller scales
 		this->enemy.setFillColor(sf::Color::Magenta);
 		break;
@@ -157,9 +205,16 @@ void Game::spawnEnemy()
 	this->enemies.push_back(this->enemy);
 }
 
+/*
+	@return void
+	Function to mediate actions to be taken following events:
+	-Key is pressed;
+	-Window is closed;
+*/
+
 void Game::pollEvents()
 {
-	while (this->window->pollEvent(this->ev)) {// quando se invoca o "this" estamos a ir buscar variáveis,funções etc que pertencem à classe do objecto Game, que está definida no Game.h
+	while (this->window->pollEvent(this->ev)) {
 
 		switch (this->ev.type) {
 		case sf::Event::Closed:
@@ -176,17 +231,21 @@ void Game::pollEvents()
 	}
 }
 
+/*@return void
+  updates the mouse positions
+	- Mouse position relative to window (Vector2i)
+*/
 void Game::updateMousePositions()
 {
-	/*@return void
-	  updates the mouse positions
-		- Mouse position relative to window (Vector2i)
-	*/
 
-	this->mousePosWindow = sf::Mouse::getPosition(*this->window);// não esquece que o window é um pointer logo o this temos de referenciar
+
+	this->mousePosWindow = sf::Mouse::getPosition(*this->window);// Window is a pointer, we need to reference it... (that's why we use *this)
 	this->mousePosView = this->window->mapPixelToCoords(this->mousePosWindow);//We take our mouse positions in window,secondly this positions are mapped to floats. Finally this floats are mapped to our View
 }
 
+/*@return void
+	Function to display in real time the points
+*/
 void Game::updateText()
 {
 	std::stringstream ss; //StreamString alows you to mix integers,chars,doubles,floats and other data types among a string
@@ -197,18 +256,19 @@ void Game::updateText()
 
 }
 
+/*
+	@return void
+	Updates the enemy spawn timer and spawns enemies
+	when the total amount of enemies is smaller than the maximum
+
+	Moves the enemies downwards
+
+	Removes enemies at the edge of the screen. 
+
+*/
 void Game::updateEnemies()
 {
-	/*
-		@return void
-		Updates the enemy spawn timer and spawns enemies
-		when the total amount of enemies is smaller than the maximum
 
-		Moves the enemies downwards
-
-		Removes enemies at the edge of the screen. //TODO
-
-	*/
 
 	//Updating the timer for enemy spawning
 	if (this->enemies.size() < this->maxEnemies) {
@@ -221,7 +281,7 @@ void Game::updateEnemies()
 			this->enemySpawnTimer = 0.f;
 		}
 		else
-			this->enemySpawnTimer += 1.f; // como é um float é melhor não fazer "this->enemySpawnTimer++"
+			this->enemySpawnTimer += 1.f; 
 
 	}
 
@@ -283,6 +343,11 @@ void Game::updateEnemies()
 
 }
 
+/*
+	@return void
+	Function to update mouse positions, text and enemies state
+
+*/
 
 void Game::update()
 {
@@ -318,14 +383,15 @@ void Game::renderEnemies(sf::RenderTarget& target)
 
 }
 
+/*  @return void
+	- clear the old frame;
+	- render the objects;
+	- display frame in our window;
+	Renders the game objects
+*/
 void Game::render()
 {
-	/*
-		- clear the old frame;
-		- render the objects;
-		- display frame in our window;
-		Renders the game objects
-	*/
+
 	this->window->clear();// O clear força o update à janela com côr preta. É o deafault!
 
 	/// Draw game objects:
